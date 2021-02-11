@@ -1,0 +1,67 @@
++package sandbox
++alias stdout org.eolang.io.stdout
++alias sprintf org.eolang.txt.sprintf
+
+[args...] > app
+  stdout > @
+    sprintf
+      "Min number is:%d\nMax number is:%d\n%s\n"
+      minElement
+      maxElement
+      arrayToString intArray
+
+  map. > intArray
+    args
+    [current]
+      current.toInt > @
+
+  reduce. > minElement
+    intArray
+    9999999999
+    [accumulator current]
+      if. > @
+        accumulator.less current
+        accumulator
+        current
+
+  reduce. > maxElement
+    intArray
+    -1
+    [accumulator current]
+      if. > @
+        accumulator.less current
+        current
+        accumulator
+
+  [previosMin] > selectiveMinElement
+    reduce. > @
+      ^.intArray
+      9999999999
+      [accumulator current]
+        if. > @
+          accumulator.less current
+          accumulator
+          if.
+            (^.previosMin.eq current).or (current.less ^.previosMin)
+            accumulator
+            current
+
+  [] > selectionSort
+    (memory 9999999999) > m
+    map. > @
+      ^.intArray
+      [current]
+        if. > @
+          ^.m.write (^.selectiveMinElement ^.m)
+          ^.m
+          error "oops. something went wrong"
+
+  [arr] > arrayToString
+    reduce. > @
+      arr
+      "Array:"
+      [accumulator current]
+        sprintf > @
+          "%s %d"
+          accumulator
+          current
